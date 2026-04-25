@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Forgot Password - {{ config('app.name', 'Laravel') }}</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
+
+    <!-- Styles / Scripts -->
+    @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @else
+        <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    @endif
+</head>
+<body class="bg-[#FDFDFC] dark:bg-[#0a0a0a] text-[#1b1b18] dark:text-[#EDEDEC] flex items-center justify-center min-h-screen font-sans antialiased">
+    <div class="w-full max-w-md p-8 sm:p-10 bg-white dark:bg-[#161615] rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.1)] border border-[#e3e3e0] dark:border-[#3E3E3A] transition-all duration-300">
+        
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#fff2f2] dark:bg-[#1D0002] mb-4">
+                <svg class="w-6 h-6 text-[#F53003] dark:text-[#F61500]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+            </div>
+            <h1 class="text-2xl font-semibold tracking-tight mb-2">Forgot Password?</h1>
+            <p class="text-[14px] text-[#706f6c] dark:text-[#A1A09A]">
+                No problem. Enter your email and we'll send you a reset link.
+            </p>
+        </div>
+
+        @if (session('success'))
+            <div class="mb-6 p-4 rounded-xl bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 text-sm font-medium border border-green-100 dark:border-green-800/30">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        <form method="POST" action="{{ route('password.email') }}" class="space-y-5">
+            @csrf
+            
+            <div>
+                <label for="email" class="block text-[13px] font-medium mb-1.5">Email address</label>
+                <div class="relative">
+                    <input type="email" id="email" name="email" value="{{ old('email') }}" required autofocus
+                        class="block w-full px-4 py-2.5 text-[14px] bg-[#FDFDFC] dark:bg-[#0a0a0a] border @error('email') border-red-500 @else border-[#e3e3e0] dark:border-[#3E3E3A] @enderror rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F53003] focus:border-transparent transition-colors shadow-sm placeholder-[#706f6c] dark:placeholder-[#62605b]" 
+                        placeholder="name@example.com">
+                    @error('email')
+                        <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
+
+            <div class="pt-2">
+                <button type="submit" 
+                    class="w-full flex justify-center py-2.5 px-4 rounded-lg text-[14px] font-medium text-white bg-[#F53003] hover:bg-[#E52B02] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#F53003] transition-all duration-200 dark:bg-[#F61500] dark:hover:bg-[#FF4433] shadow-[0_2px_10px_rgba(245,48,3,0.3)]">
+                    Send Password Reset Link
+                </button>
+            </div>
+        </form>
+
+        <div class="mt-8 text-center">
+            <a href="{{ route('login') }}" class="text-[13px] font-medium text-[#F53003] dark:text-[#FF4433] hover:underline underline-offset-4">
+                Back to Login
+            </a>
+        </div>
+    </div>
+</body>
+</html>
