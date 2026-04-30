@@ -74,6 +74,7 @@ const ScrollReveal = ({ children, direction = "up" }) => {
   return <div ref={elementRef}>{children}</div>;
 };
 
+
 export default function App() {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [barColor, setBarColor] = useState('#FF6B00');
@@ -82,6 +83,7 @@ export default function App() {
   const splashTextRef = useRef(null);
 
   useEffect(() => {
+    // Splash Screen Animation (Responsive)
     const ctx = gsap.context(() => {
         const words = splashTextRef.current.querySelectorAll('.word');
         const isMobile = window.innerWidth < 768;
@@ -97,64 +99,112 @@ export default function App() {
             }
         });
 
-        tl.fromTo(words, 
-            { opacity: 0, y: 50 },
-            { 
-              opacity: 1, 
-              y: 0, 
-              duration: 0.8, 
-              stagger: isMobile ? 0.8 : 0.4, 
-              ease: "back.out(1.7)" 
-            }
-        ).to({}, { duration: 0.5 });
+        if (isMobile) {
+            // Mobile: One-by-one in the center
+            words.forEach((word, index) => {
+                tl.fromTo(word, 
+                    { opacity: 0, scale: 0.9, y: 10 },
+                    { opacity: 1, scale: 1, y: 0, duration: 0.6, ease: "power2.out" }
+                );
+                if (index < words.length - 1) {
+                    tl.to(word, { opacity: 0, scale: 1.1, duration: 0.4, delay: 0.4 });
+                } else {
+                    tl.to({}, { duration: 0.5 });
+                }
+            });
+        } else {
+            // Desktop: Sequential side-by-side reveal (no fade out)
+            tl.fromTo(words, 
+                { opacity: 0, y: 20 },
+                { 
+                    opacity: 1, 
+                    y: 0, 
+                    duration: 0.8, 
+                    stagger: 0.6, 
+                    ease: "power3.out" 
+                }
+            );
+            tl.to({}, { duration: 1 }); // Pause before exit
+        }
     });
-    return () => ctx.revert();
-  }, []);
 
-  useEffect(() => {
     const handleScroll = () => {
-      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = (window.scrollY / totalHeight) * 100;
-      setScrollProgress(progress);
-
-      if (progress > 75) setBarColor('#FF6B00');
-      else if (progress > 50) setBarColor('#0EA5E9');
-      else if (progress > 25) setBarColor('#10B981');
-      else setBarColor('#FF6B00');
+      const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const currentScroll = window.pageYOffset;
+      setScrollProgress((currentScroll / totalScroll) * 100);
     };
 
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+
+    // Dynamic Color Triggers
+    const sections = [
+      { id: 'hero', color: '#FFD100' },
+      { id: 'security', color: '#10B981' },
+      { id: 'rooms', color: '#0EA5E9' },
+      { id: 'cta', color: '#FF6B00' }
+    ];
+
+    sections.forEach(section => {
+      ScrollTrigger.create({
+        trigger: `#${section.id}`,
+        start: "top 50%",
+        end: "bottom 50%",
+        onEnter: () => setBarColor(section.color),
+        onEnterBack: () => setBarColor(section.color),
+      });
+    });
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      ScrollTrigger.getAll().forEach(t => t.kill());
+    };
   }, []);
 
   return (
-    <div className="font-poppins bg-[#F4E4BC] selection:bg-black selection:text-white overflow-x-hidden">
+    <div className="min-h-screen bg-[#FFD100] text-black selection:bg-black selection:text-white overflow-x-hidden font-['Instrument_Sans'] relative">
+      
+      {/* Splash Screen */}
       {showSplash && (
         <div 
           ref={splashRef}
-          className="fixed inset-0 z-[1000] bg-black flex items-center justify-center overflow-hidden"
+          className="fixed inset-0 z-[1000] bg-black flex items-center justify-center p-6"
         >
-          <div ref={splashTextRef} className="flex flex-col md:flex-row items-center gap-4 md:gap-8">
-            <span className="word text-white text-5xl md:text-8xl font-black italic">Hello,</span>
-            <span className="word text-white text-5xl md:text-8xl font-black italic">We Are</span>
-            <span className="word text-[#E65100] text-5xl md:text-8xl font-black italic">Griya Chandra.</span>
+          <div 
+            ref={splashTextRef}
+            className="text-white text-4xl md:text-6xl font-black text-center tracking-widest relative w-full flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8"
+          >
+            <span className="word absolute md:relative flex items-center justify-center">Hello,</span>
+            <span className="word absolute md:relative flex items-center justify-center">We Are</span>
+            <span className="word absolute md:relative flex items-center justify-center text-[#E65100]">Griya Chandra.</span>
           </div>
         </div>
       )}
 
-      {/* Scroll Zipper Logic */}
-      <div className="fixed right-6 top-1/2 -translate-y-1/2 w-8 h-[70vh] z-50 hidden md:block group">
-          <div className="absolute inset-0 bg-black/10 rounded-full border-4 border-black"></div>
+      {/* Subtle Global Grid & Motifs */}
+      <div className="animate-bg-zigzag"></div>
+
+      {/* Zipper-style Vertical Scroll Indicator (Right Side) */}
+      <div className="fixed right-6 top-48 bottom-10 w-6 z-[60] bg-black/10 border-x-4 border-black hidden md:block">
+          {/* Zipper Teeth (Closed part - Below) */}
+          <div className="absolute inset-0 opacity-40 bg-[repeating-linear-gradient(0deg,#000,#000_4px,transparent_4px,transparent_8px)] [background-size:100%_8px]"></div>
+          
+          {/* The Zipper Pull (Handle) */}
           <div 
-            className="absolute left-1/2 -translate-x-1/2 w-12 h-20 bg-[#FFD100] border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center cursor-grab active:cursor-grabbing z-20"
+            className="w-[140%] -left-[20%] h-16 border-4 border-black transition-all duration-300 ease-out absolute z-20 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center overflow-hidden"
             style={{ 
-              top: `${scrollProgress}%`,
+              top: `${scrollProgress}%`, 
+              backgroundColor: barColor,
+              borderRadius: '4px 4px 12px 12px',
               transform: 'translateY(-50%)'
             }}
           >
+              {/* Pull Tab Hole */}
               <div className="w-2 h-6 bg-black/20 rounded-full border-2 border-black/40"></div>
+              {/* Metallic Shine */}
               <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-white/20 via-transparent to-black/20 pointer-events-none"></div>
           </div>
+
+          {/* Opened Part (Above pull) */}
           <div 
             className="absolute top-0 left-0 w-full bg-gray-500/40 transition-all duration-300"
             style={{ height: `${scrollProgress}%` }}
@@ -163,6 +213,7 @@ export default function App() {
           </div>
       </div>
 
+      {/* Scroll Progress Bar (Top) */}
       <div className="fixed top-0 left-0 w-full h-3 z-[90] border-b-2 border-black bg-white/20 backdrop-blur-sm">
         <div 
           className="h-full transition-all duration-300 ease-out"
@@ -170,8 +221,10 @@ export default function App() {
         />
       </div>
 
-      <nav className="fixed w-full z-[80] bg-gray-500/50 backdrop-blur-md border-b-4 border-black">
-        <div className="max-w-7xl mx-auto px-4 md:px-12 py-4 md:py-6 flex justify-between items-center relative">
+
+
+      <nav className="fixed w-full z-[80] bg-[#8B7D32]/90 backdrop-blur-md border-b-4 border-black">
+        <div className="max-w-7xl mx-auto px-4 md:px-12 py-8 md:py-10 flex justify-between items-center relative">
           <div className="flex items-center">
             <a href="/">
               <SkewButton color="bg-[#FF6B00]" hideArrow className="!h-9 md:!h-12 !px-2 md:!px-4 !border-2 md:!border-4">
@@ -180,15 +233,16 @@ export default function App() {
             </a>
           </div>
 
+          {/* Centered About Element - Now visible on mobile */}
           <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center">
-            <SkewButton color="bg-[#0EA5E9]" className="!h-8 md:!h-12 !px-4 md:!px-8 !border-2 md:!border-4 scale-90 md:scale-100">
+            <SkewButton color="bg-[#0EA5E9]" className="!h-8 md:!h-12 !px-4 md:!px-8 !border-2 md:!border-4">
               <span className="text-[10px] md:text-base">About</span>
             </SkewButton>
           </div>
 
           <div className="flex items-center">
             <a href="/login">
-              <SkewButton color="bg-[#10B981]" className="!h-8 md:!h-12 !px-4 md:!px-8 !border-2 md:!border-4 scale-90 md:scale-100">
+              <SkewButton color="bg-[#10B981]" className="!h-8 md:!h-12 !px-4 md:!px-8 !border-2 md:!border-4">
                 <span className="text-[10px] md:text-base">Masuk</span>
               </SkewButton>
             </a>
@@ -196,22 +250,35 @@ export default function App() {
         </div>
       </nav>
 
+      {/* 1. HERO SECTION (Centered) */}
       <main id="hero" className="relative z-10 pt-48 max-w-7xl mx-auto px-6 lg:px-20 mb-40">
-        <section className="min-h-[80vh] flex flex-col justify-center">
+        <section className="min-h-[80vh] grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <ScrollReveal direction="left">
             <div className="inline-block px-4 py-1 bg-[#10B981] border-4 border-black font-black uppercase text-sm shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] mb-8 text-white">
               Berdiri Sejak - 2014
             </div>
             <h1 className="text-7xl md:text-9xl font-black leading-[0.85] uppercase tracking-tighter mb-10">
-              <span className="text-[#10B981] italic text-stroke-black">Griya</span><span className="text-white text-stroke-black"> -</span> <br /> <span className="text-[#FF6B00] italic text-stroke-black">Chandra</span><span className="text-[#10B981] text-stroke-black">.</span>
+              <span className="text-[#10B981] italic text-stroke-black">Griya</span> <br /> <span className="text-[#FF6B00] italic text-stroke-black">Chandra</span><span className="text-[#10B981] text-stroke-black">.</span>
             </h1>
             <p className="text-2xl font-bold leading-tight max-w-xl mb-12 border-l-8 border-[#FF6B00] pl-6">
               <span className="text-[#10B981]">Indekost dengan konsep</span> <span className="text-[#FF6B00]">semi apartemen</span>
             </p>
           </ScrollReveal>
+
+          <ScrollReveal direction="right">
+            <div className="flex justify-center lg:justify-end">
+              <div className="gallery">
+                <img src="https://picsum.photos/id/174/400/400" alt="a hot air balloon" />
+                <img src="https://picsum.photos/id/188/400/400" alt="a sky photo of an old city" />
+                <img src="https://picsum.photos/id/211/400/400" alt="a small boat" />
+                <img src="https://picsum.photos/id/28/400/400" alt="a forest" />
+              </div>
+            </div>
+          </ScrollReveal>
         </section>
       </main>
 
+      {/* 2. SECURITY SECTION (Full-Width Green) */}
       <div id="security" className="w-full bg-[#10B981] border-t-4 border-black relative py-32 z-10">
         <div className="absolute inset-0 opacity-10 bg-[repeating-linear-gradient(45deg,#000,#000_10px,transparent_10px,transparent_20px)] animate-bg-diagonal"></div>
         <div className="max-w-7xl mx-auto px-6 lg:px-20 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
@@ -224,7 +291,7 @@ export default function App() {
             </div>
           </ScrollReveal>
           <ScrollReveal direction="left">
-            <h2 className="text-6xl md:text-7xl font-black uppercase mb-8 leading-none text-black text-stroke-black">Keamanan <br /> Berbasis <br /> <span className="text-white">Teknologi.</span></h2>
+            <h2 className="text-6xl md:text-7xl font-black uppercase mb-8 leading-none text-black">Keamanan <br /> Berbasis <br /> <span className="text-white">Teknologi.</span></h2>
             <p className="text-xl font-bold leading-relaxed text-black">
               Kami menggabungkan kenyamanan desain retro dengan sistem keamanan tercanggih. Smart lock, CCTV di setiap sudut, dan sistem monitoring real-time.
             </p>
@@ -232,33 +299,37 @@ export default function App() {
         </div>
       </div>
 
+      {/* 3. ROOM SECTION (Full-Width Blue) */}
       <div id="rooms" className="w-full bg-[#0EA5E9] border-t-4 border-black relative py-32 z-10">
         <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#000_2px,transparent_2px)] [background-size:24px_24px] animate-bg-dots"></div>
         <div className="max-w-7xl mx-auto px-6 lg:px-20 relative z-10">
           <ScrollReveal>
             <div className="text-center mb-20">
-              <h2 className="text-7xl font-black uppercase tracking-tighter text-white text-stroke-black">Pilihan Kamar</h2>
+              <h2 className="text-7xl font-black uppercase tracking-tighter text-white">Pilihan Kamar</h2>
             </div>
           </ScrollReveal>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+            {/* Tipe AC */}
             <ScrollReveal direction="right">
               <div className="card-perspective h-[450px]">
                 <div className="card-inner">
+                  {/* Front Side */}
                   <div className="card-front p-10 border-4 border-black bg-[#FFD100] shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
                     <div className="text-5xl mb-6">❄️</div>
-                    <h3 className="text-5xl font-black uppercase mb-4 text-stroke-black">Tipe AC</h3>
+                    <h3 className="text-5xl font-black uppercase mb-4">Tipe AC</h3>
                     <p className="font-bold text-lg mb-8">Kenyamanan maksimal dengan pendingin udara dan fasilitas lengkap.</p>
                     <div className="mt-auto">
                       <RetroButton className="w-full">Detail Kamar</RetroButton>
                     </div>
                   </div>
+                  {/* Back Side */}
                   <div className="card-back p-10 border-4 border-black bg-black text-white shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
                     <h3 className="text-3xl font-black uppercase mb-6 text-[#FFD100]">Fasilitas Utama</h3>
                     <ul className="space-y-4 font-bold text-lg mb-8">
-                      <li>✓ AC Daikin 1/2 PK</li>
-                      <li>✓ Smart TV 32 Inch</li>
-                      <li>✓ Kamar Mandi Dalam</li>
-                      <li>✓ Meja & Kursi Kerja</li>
+                      <li className="flex items-center gap-3">✓ AC Daikin 1/2 PK</li>
+                      <li className="flex items-center gap-3">✓ Smart TV 32 Inch</li>
+                      <li className="flex items-center gap-3">✓ Kamar Mandi Dalam</li>
+                      <li className="flex items-center gap-3">✓ Meja & Kursi Kerja</li>
                     </ul>
                     <div className="mt-auto">
                       <RetroButton className="w-full !bg-[#FF6B00] !text-white">Pilih Kamar Ini</RetroButton>
@@ -268,24 +339,27 @@ export default function App() {
               </div>
             </ScrollReveal>
 
+            {/* Tipe Non-AC */}
             <ScrollReveal direction="left">
               <div className="card-perspective h-[450px]">
                 <div className="card-inner">
+                  {/* Front Side */}
                   <div className="card-front p-10 border-4 border-black bg-white shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
                     <div className="text-5xl mb-6">🌿</div>
-                    <h3 className="text-5xl font-black uppercase mb-4 text-[#10B981] text-stroke-black">Tipe Non-AC</h3>
+                    <h3 className="text-5xl font-black uppercase mb-4 text-[#10B981]">Tipe Non-AC</h3>
                     <p className="font-bold text-lg mb-8 text-slate-600">Kesegaran alami dengan sirkulasi udara yang dirancang khusus.</p>
                     <div className="mt-auto">
                       <RetroButton className="w-full">Detail Kamar</RetroButton>
                     </div>
                   </div>
+                  {/* Back Side */}
                   <div className="card-back p-10 border-4 border-black bg-[#10B981] text-white shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
                     <h3 className="text-3xl font-black uppercase mb-6 text-black">Fasilitas Utama</h3>
                     <ul className="space-y-4 font-bold text-lg mb-8 text-black">
-                      <li>✓ Exhaust Fan Turbo</li>
-                      <li>✓ Kasur Springbed</li>
-                      <li>✓ Lemari Pakaian</li>
-                      <li>✓ Free Wi-Fi 5G</li>
+                      <li className="flex items-center gap-3">✓ Exhaust Fan Turbo</li>
+                      <li className="flex items-center gap-3">✓ Kasur Springbed</li>
+                      <li className="flex items-center gap-3">✓ Lemari Pakaian</li>
+                      <li className="flex items-center gap-3">✓ Free Wi-Fi 5G</li>
                     </ul>
                     <div className="mt-auto">
                       <RetroButton className="w-full !bg-white !text-black">Pilih Kamar Ini</RetroButton>
@@ -298,12 +372,14 @@ export default function App() {
         </div>
       </div>
 
+      {/* 4. FINAL CTA SECTION (Full-Width Orange) */}
       <div id="cta" className="w-full bg-[#FF6B00] border-t-4 border-black relative py-40 z-10">
         <div className="absolute inset-0 opacity-10 bg-[repeating-linear-gradient(0deg,transparent,transparent_20px,#000_20px,#000_23px)] animate-bg-vertical"></div>
         <div className="max-w-7xl mx-auto px-6 lg:px-20 relative z-10 text-center">
           <ScrollReveal direction="up">
             <div className="bg-white border-4 border-black p-16 md:p-24 shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] text-black relative overflow-hidden flex items-center justify-center min-h-[400px]">
               <div className="comic-burst"></div>
+
               <h2 className="text-7xl md:text-9xl font-black uppercase leading-none comic-text relative z-10 text-center italic">
                 Siap Memulai <br />
                 <span className="text-white">Cerita Baru?</span>

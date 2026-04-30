@@ -64,17 +64,72 @@ const ScrollReveal = ({ children, direction = "up" }) => {
         ease: "power4.out",
         scrollTrigger: {
           trigger: el,
-          start: "top 90%",
-          end: "bottom 10%",
-          toggleActions: "play reverse play reverse"
+          start: "top 95%",
+          end: "bottom 5%",
+          toggleActions: "play none none reverse"
         }
       }
     );
   }, [direction]);
 
-  return <div ref={elementRef}>{children}</div>;
+  return <div ref={elementRef} className="relative z-10">{children}</div>;
 };
 
+const DiagonalGrid = () => (
+  <div 
+    className="absolute inset-0 pointer-events-none z-0 opacity-40"
+    style={{
+      backgroundImage: `
+        repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.15) 0, rgba(0, 0, 0, 0.15) 2px, transparent 2px, transparent 20px),
+        repeating-linear-gradient(-45deg, rgba(0, 0, 0, 0.15) 0, rgba(0, 0, 0, 0.15) 2px, transparent 2px, transparent 20px)
+      `,
+      backgroundSize: "40px 40px",
+      animation: "move-bg-vertical 2s linear infinite"
+    }}
+  ></div>
+);
+
+
+const RoomCard = ({ icon, title, description, backTitle, facilities, bgColor, backBgColor, buttonColor = "!bg-white !text-black" }) => {
+  const [isFlipped, setIsFlipped] = useState(false);
+
+  return (
+    <ScrollReveal direction={title.includes("Non") ? "left" : "right"}>
+      <div className="card-perspective h-[450px]">
+        <div className={`card-inner ${isFlipped ? 'is-flipped' : ''}`}>
+          {/* Front */}
+          <div className={`card-front p-10 border-4 border-black ${bgColor} shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]`}>
+            <div className="text-5xl mb-6">{icon}</div>
+            <h3 className="text-5xl font-black uppercase mb-4">{title}</h3>
+            <p className="font-bold text-lg mb-8">{description}</p>
+            <div className="mt-auto">
+              <RetroButton className="w-full" onClick={() => setIsFlipped(true)}>
+                Detail Kamar
+              </RetroButton>
+            </div>
+          </div>
+          {/* Back */}
+          <div className={`card-back p-10 border-4 border-black ${backBgColor} text-white shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]`}>
+            <h3 className="text-3xl font-black uppercase mb-6">{backTitle}</h3>
+            <ul className="space-y-4 font-bold text-lg mb-8">
+              {facilities.map((fac, i) => (
+                <li key={i} className="flex items-center gap-3 text-white">✓ {fac}</li>
+              ))}
+            </ul>
+            <div className="mt-auto flex gap-4">
+              <RetroButton className="flex-1" onClick={() => setIsFlipped(false)}>
+                Kembali
+              </RetroButton>
+              <RetroButton className={`flex-1 ${buttonColor}`}>
+                Pilih
+              </RetroButton>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ScrollReveal>
+  );
+};
 
 const Landing = () => {
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -162,7 +217,7 @@ const Landing = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#FFD100] text-black selection:bg-black selection:text-white overflow-x-hidden font-['Instrument_Sans'] relative">
+    <div className="min-h-screen bg-[#fafafa] text-black selection:bg-black selection:text-white font-['Instrument_Sans'] relative">
       
       {/* Splash Screen */}
       {showSplash && (
@@ -181,9 +236,7 @@ const Landing = () => {
         </div>
       )}
 
-      {/* Subtle Global Grid & Motifs */}
-      <div className="fixed inset-0 opacity-[0.05] pointer-events-none z-0 bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:40px_40px]"></div>
-      <div className="fixed inset-0 pointer-events-none z-0 animate-bg-zigzag"></div>
+
 
       {/* Zipper-style Vertical Scroll Indicator (Right Side) */}
       <div className="fixed right-6 top-36 bottom-10 w-6 z-[60] bg-black/10 border-x-4 border-black hidden md:block">
@@ -252,134 +305,115 @@ const Landing = () => {
         </div>
       </nav>
 
-      {/* 1. HERO SECTION (Centered) */}
-      <main id="hero" className="relative z-10 pt-48 max-w-7xl mx-auto px-6 lg:px-20 mb-40">
-        <section className="min-h-[80vh] flex flex-col justify-center">
-          <ScrollReveal direction="left">
-            <div className="inline-block px-4 py-1 bg-[#10B981] border-4 border-black font-black uppercase text-sm shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] mb-8 text-white">
-              Berdiri Sejak - 2014
-            </div>
-            <h1 className="text-7xl md:text-9xl font-black leading-[0.85] uppercase tracking-tighter mb-10">
-              <span className="text-[#10B981] italic text-stroke-black">Griya</span> <br /> <span className="text-[#FF6B00] italic text-stroke-black">Chandra</span><span className="text-[#10B981] text-stroke-black">.</span>
-            </h1>
-            <p className="text-2xl font-bold leading-tight max-w-xl mb-12 border-l-8 border-[#FF6B00] pl-6">
-              <span className="text-[#10B981]">Indekost dengan konsep</span> <span className="text-[#FF6B00]">semi apartemen</span>
-            </p>
-          </ScrollReveal>
-        </section>
-      </main>
+      {/* STICKY STACKED SECTIONS CONTAINER */}
+      <div className="relative">
+        
+        {/* 1. HERO SECTION (Yellow) */}
+        <div id="hero" className="sticky top-0 h-screen flex items-center bg-[#FFD100] z-10 border-b-4 border-black overflow-hidden relative">
+          <DiagonalGrid />
+          <main className="w-full max-w-[1440px] mx-auto px-6 lg:px-20 pt-20 pb-0 relative z-10">
+            <section className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-40 items-center">
+              <ScrollReveal direction="left">
+                <div className="inline-block px-4 py-1 bg-[#10B981] border-4 border-black font-black uppercase text-sm shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] mb-8 text-white">
+                  Berdiri Sejak - 2014
+                </div>
+                <h1 className="text-7xl md:text-9xl font-black leading-[0.85] uppercase tracking-tighter mb-10">
+                  <span className="text-[#10B981] italic text-stroke-black">Griya</span> <br /> <span className="text-[#FF6B00] italic text-stroke-black">Chandra</span><span className="text-[#10B981] text-stroke-black">.</span>
+                </h1>
+                <p className="text-2xl font-bold leading-tight max-w-xl mb-0 border-l-8 border-[#FF6B00] pl-6">
+                  <span className="text-[#10B981]">Indekost dengan konsep</span> <span className="text-[#FF6B00]">semi apartemen</span>
+                </p>
+              </ScrollReveal>
 
-      {/* 2. SECURITY SECTION (Full-Width Green) */}
-      <div id="security" className="w-full bg-[#10B981] border-t-4 border-black relative py-32 z-10">
-        <div className="absolute inset-0 opacity-10 bg-[repeating-linear-gradient(45deg,#000,#000_10px,transparent_10px,transparent_20px)] animate-bg-diagonal"></div>
-        <div className="max-w-7xl mx-auto px-6 lg:px-20 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
-          <ScrollReveal direction="right">
-            <div className="aspect-square bg-[#0EA5E9] border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center relative">
-              <span className="text-[180px] select-none">🔐</span>
-              <div className="absolute -top-6 -right-6 bg-white border-4 border-black p-4 font-black rotate-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                AMAN 24 JAM
-              </div>
-            </div>
-          </ScrollReveal>
-          <ScrollReveal direction="left">
-            <h2 className="text-6xl md:text-7xl font-black uppercase mb-8 leading-none text-black">Keamanan <br /> Berbasis <br /> <span className="text-white">Teknologi.</span></h2>
-            <p className="text-xl font-bold leading-relaxed text-black">
-              Kami menggabungkan kenyamanan desain retro dengan sistem keamanan tercanggih. Smart lock, CCTV di setiap sudut, dan sistem monitoring real-time.
-            </p>
-          </ScrollReveal>
+              <ScrollReveal direction="right">
+                <div className="flex justify-center lg:justify-end items-center p-4">
+                  <div className="bg-[#10B981] rounded-lg shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] border-4 border-black w-full max-w-md transform duration-500 hover:translate-x-5 hover:translate-y-5 pointer-events-none">
+                    <img 
+                      className="rounded-lg shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] border-4 border-black transform duration-500 hover:-translate-x-10 hover:-translate-y-10 pointer-events-auto w-full object-cover" 
+                      src="https://images.unsplash.com/photo-1604489141828-ca67d245c447" 
+                      alt="Griya Chandra Hero"
+                    />
+                  </div>
+                </div>
+              </ScrollReveal>
+            </section>
+          </main>
         </div>
-      </div>
 
-      {/* 3. ROOM SECTION (Full-Width Blue) */}
-      <div id="rooms" className="w-full bg-[#0EA5E9] border-t-4 border-black relative py-32 z-10">
-        <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#000_2px,transparent_2px)] [background-size:24px_24px] animate-bg-dots"></div>
-        <div className="max-w-7xl mx-auto px-6 lg:px-20 relative z-10">
-          <ScrollReveal>
-            <div className="text-center mb-20">
-              <h2 className="text-7xl font-black uppercase tracking-tighter text-white">Pilihan Kamar</h2>
-            </div>
-          </ScrollReveal>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-            {/* Tipe AC */}
+        {/* 2. SECURITY SECTION (Green) */}
+        <div id="security" className="sticky top-0 h-screen flex items-center bg-[#10B981] z-20 border-t-4 border-black overflow-hidden relative">
+          <div className="absolute inset-0 opacity-10 bg-[repeating-linear-gradient(45deg,#000,#000_10px,transparent_10px,transparent_20px)] animate-bg-diagonal"></div>
+          <div className="max-w-7xl mx-auto px-6 lg:px-20 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10 w-full">
             <ScrollReveal direction="right">
-              <div className="card-perspective h-[450px]">
-                <div className="card-inner">
-                  {/* Front Side */}
-                  <div className="card-front p-10 border-4 border-black bg-[#FFD100] shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
-                    <div className="text-5xl mb-6">❄️</div>
-                    <h3 className="text-5xl font-black uppercase mb-4">Tipe AC</h3>
-                    <p className="font-bold text-lg mb-8">Kenyamanan maksimal dengan pendingin udara dan fasilitas lengkap.</p>
-                    <div className="mt-auto">
-                      <RetroButton className="w-full">Detail Kamar</RetroButton>
-                    </div>
-                  </div>
-                  {/* Back Side */}
-                  <div className="card-back p-10 border-4 border-black bg-black text-white shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
-                    <h3 className="text-3xl font-black uppercase mb-6 text-[#FFD100]">Fasilitas Utama</h3>
-                    <ul className="space-y-4 font-bold text-lg mb-8">
-                      <li className="flex items-center gap-3">✓ AC Daikin 1/2 PK</li>
-                      <li className="flex items-center gap-3">✓ Smart TV 32 Inch</li>
-                      <li className="flex items-center gap-3">✓ Kamar Mandi Dalam</li>
-                      <li className="flex items-center gap-3">✓ Meja & Kursi Kerja</li>
-                    </ul>
-                    <div className="mt-auto">
-                      <RetroButton className="w-full !bg-[#FF6B00] !text-white">Pilih Kamar Ini</RetroButton>
-                    </div>
-                  </div>
+              <div className="flex justify-center lg:justify-start">
+                <div className="gallery">
+                  <img src="https://picsum.photos/id/174/400/400" alt="a hot air balloon" />
+                  <img src="https://picsum.photos/id/188/400/400" alt="a sky photo of an old city" />
+                  <img src="https://picsum.photos/id/211/400/400" alt="a small boat" />
+                  <img src="https://picsum.photos/id/28/400/400" alt="a forest" />
                 </div>
               </div>
             </ScrollReveal>
-
-            {/* Tipe Non-AC */}
             <ScrollReveal direction="left">
-              <div className="card-perspective h-[450px]">
-                <div className="card-inner">
-                  {/* Front Side */}
-                  <div className="card-front p-10 border-4 border-black bg-white shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
-                    <div className="text-5xl mb-6">🌿</div>
-                    <h3 className="text-5xl font-black uppercase mb-4 text-[#10B981]">Tipe Non-AC</h3>
-                    <p className="font-bold text-lg mb-8 text-slate-600">Kesegaran alami dengan sirkulasi udara yang dirancang khusus.</p>
-                    <div className="mt-auto">
-                      <RetroButton className="w-full">Detail Kamar</RetroButton>
-                    </div>
-                  </div>
-                  {/* Back Side */}
-                  <div className="card-back p-10 border-4 border-black bg-[#10B981] text-white shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
-                    <h3 className="text-3xl font-black uppercase mb-6 text-black">Fasilitas Utama</h3>
-                    <ul className="space-y-4 font-bold text-lg mb-8 text-black">
-                      <li className="flex items-center gap-3">✓ Exhaust Fan Turbo</li>
-                      <li className="flex items-center gap-3">✓ Kasur Springbed</li>
-                      <li className="flex items-center gap-3">✓ Lemari Pakaian</li>
-                      <li className="flex items-center gap-3">✓ Free Wi-Fi 5G</li>
-                    </ul>
-                    <div className="mt-auto">
-                      <RetroButton className="w-full !bg-white !text-black">Pilih Kamar Ini</RetroButton>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <h2 className="text-6xl md:text-7xl font-black uppercase mb-8 leading-none text-black">Keamanan <br /> Berbasis <br /> <span className="text-white">Teknologi.</span></h2>
+              <p className="text-xl font-bold leading-relaxed text-black">
+                Kami menggabungkan kenyamanan desain retro dengan sistem keamanan tercanggih. Smart lock, CCTV di setiap sudut, dan sistem monitoring real-time.
+              </p>
             </ScrollReveal>
           </div>
         </div>
-      </div>
 
-      {/* 4. FINAL CTA SECTION (Full-Width Orange) */}
-      <div id="cta" className="w-full bg-[#FF6B00] border-t-4 border-black relative py-40 z-10">
-        <div className="absolute inset-0 opacity-10 bg-[repeating-linear-gradient(0deg,transparent,transparent_20px,#000_20px,#000_23px)] animate-bg-vertical"></div>
-        <div className="max-w-7xl mx-auto px-6 lg:px-20 relative z-10 text-center">
-          <ScrollReveal direction="up">
-            <div className="bg-white border-4 border-black p-16 md:p-24 shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] text-black relative overflow-hidden flex items-center justify-center min-h-[400px]">
-              <div className="comic-burst"></div>
-
-              <h2 className="text-7xl md:text-9xl font-black uppercase leading-none comic-text relative z-10 text-center italic">
-                Siap Memulai <br />
-                <span className="text-white">Cerita Baru?</span>
-              </h2>
+        {/* 3. ROOM SECTION (Blue) */}
+        <div id="rooms" className="sticky top-0 h-screen flex items-center bg-[#0EA5E9] z-30 border-t-4 border-black overflow-hidden relative">
+          <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#000_2px,transparent_2px)] [background-size:24px_24px] animate-bg-dots"></div>
+          <div className="max-w-7xl mx-auto px-6 lg:px-20 relative z-10 w-full">
+            <ScrollReveal>
+              <div className="text-center mb-20">
+                <h2 className="text-7xl font-black uppercase tracking-tighter text-white">Pilihan Kamar</h2>
+              </div>
+            </ScrollReveal>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+              <RoomCard 
+                icon="❄️"
+                title="Tipe AC"
+                description="Kenyamanan maksimal dengan pendingin udara dan fasilitas lengkap."
+                backTitle="Fasilitas Utama"
+                facilities={["AC Daikin 1/2 PK", "Smart TV 32 Inch", "Kamar Mandi Dalam", "Meja & Kursi Kerja"]}
+                bgColor="bg-[#FFD100]"
+                backBgColor="bg-black"
+                buttonColor="!bg-[#FF6B00] !text-white"
+              />
+              <RoomCard 
+                icon="🌿"
+                title="Tipe Non-AC"
+                description="Kesegaran alami dengan sirkulasi udara yang dirancang khusus."
+                backTitle="Fasilitas Utama"
+                facilities={["Exhaust Fan Turbo", "Kasur Springbed", "Lemari Pakaian", "Free Wi-Fi 5G"]}
+                bgColor="bg-white"
+                backBgColor="bg-[#10B981]"
+                buttonColor="!bg-white !text-black"
+              />
             </div>
-          </ScrollReveal>
-          <footer className="mt-24 font-black uppercase text-xl text-white">
-            Griya Chandra Residence © 2026
-          </footer>
+          </div>
+        </div>
+
+        {/* 4. FINAL CTA SECTION (Orange) */}
+        <div id="cta" className="sticky top-0 h-screen flex items-center bg-[#FF6B00] z-40 border-t-4 border-black overflow-hidden relative">
+          <div className="absolute inset-0 opacity-10 bg-[repeating-linear-gradient(0deg,transparent,transparent_20px,#000_20px,#000_23px)] animate-bg-vertical"></div>
+          <div className="max-w-7xl mx-auto px-6 lg:px-20 relative z-10 text-center w-full">
+            <ScrollReveal direction="up">
+              <div className="bg-white border-4 border-black p-16 md:p-24 shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] text-black relative overflow-hidden flex items-center justify-center min-h-[400px]">
+                <div className="comic-burst"></div>
+                <h2 className="text-7xl md:text-9xl font-black uppercase leading-none comic-text relative z-10 text-center italic">
+                  Siap Memulai <br />
+                  <span className="text-white">Cerita Baru?</span>
+                </h2>
+              </div>
+            </ScrollReveal>
+            <footer className="mt-24 font-black uppercase text-xl text-white">
+              Griya Chandra Residence © 2026
+            </footer>
+          </div>
         </div>
       </div>
     </div>
