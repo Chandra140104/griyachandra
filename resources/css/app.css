@@ -7,18 +7,50 @@
 }
 
 @keyframes lightning-strike {
-  0% { opacity: 0; transform: scaleY(0) translateY(-100px); }
-  5% { opacity: 1; transform: scaleY(1.2) translateY(0); }
-  10% { opacity: 0; }
-  15% { opacity: 1; }
-  20% { opacity: 0; }
-  100% { opacity: 0; }
+  0% {
+    opacity: 0;
+    transform: scaleY(0) translateY(-100px);
+  }
+
+  5% {
+    opacity: 1;
+    transform: scaleY(1.2) translateY(0);
+  }
+
+  10% {
+    opacity: 0;
+  }
+
+  15% {
+    opacity: 1;
+  }
+
+  20% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 0;
+  }
 }
 
 @keyframes flash-bg {
-  0%, 10%, 20% { background-color: #fff; }
-  5%, 15% { background-color: #FFD100; }
-  21%, 100% { background-color: white; }
+
+  0%,
+  10%,
+  20% {
+    background-color: #fff;
+  }
+
+  5%,
+  15% {
+    background-color: #FFD100;
+  }
+
+  21%,
+  100% {
+    background-color: white;
+  }
 }
 
 .animate-lightning {
@@ -31,8 +63,13 @@
 }
 
 @keyframes burst-rotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .comic-text {
@@ -58,52 +95,77 @@
 }
 
 @keyframes color_anim {
-    0% { fill: white; }
-    50% { fill: #000; }
-    100% { fill: white; }
+  0% {
+    fill: white;
+  }
+
+  50% {
+    fill: #000;
+  }
+
+  100% {
+    fill: white;
+  }
 }
 
 .skew-button {
-    display: flex;
-    align-items: center;
-    padding: 10px 30px;
-    text-decoration: none;
-    transition: 0.5s;
-    box-shadow: 6px 6px 0 black;
-    transform: skewX(-15deg);
-    border: 4px border-black;
-    cursor: pointer;
-    border: 4px solid black;
+  display: flex;
+  align-items: center;
+  padding: 10px 30px;
+  text-decoration: none;
+  transition: 0.5s;
+  box-shadow: 6px 6px 0 black;
+  transform: skewX(-15deg);
+  border: 4px border-black;
+  cursor: pointer;
+  border: 4px solid black;
 }
 
 .skew-button:hover {
-    box-shadow: 10px 10px 0 #000;
-    transform: skewX(-15deg) translate(-2px, -2px);
+  box-shadow: 10px 10px 0 #000;
+  transform: skewX(-15deg) translate(-2px, -2px);
 }
 
 .skew-content {
-    transform: skewX(15deg);
-    display: flex;
-    align-items: center;
-    gap: 15px;
+  transform: skewX(15deg);
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
 .skew-button svg {
-    width: 30px;
-    height: 20px;
-    transition: 0.5s;
+  width: 30px;
+  height: 20px;
+  transition: 0.5s;
 }
 
 .skew-button:hover svg {
-    margin-left: 20px;
+  margin-left: 20px;
 }
 
-.skew-button path.one { transition: 0.4s; transform: translateX(-60%); }
-.skew-button path.two { transition: 0.5s; transform: translateX(-30%); }
+.skew-button path.one {
+  transition: 0.4s;
+  transform: translateX(-60%);
+}
 
-.skew-button:hover path.three { animation: color_anim 1s infinite 0.2s; }
-.skew-button:hover path.one { transform: translateX(0%); animation: color_anim 1s infinite 0.6s; }
-.skew-button:hover path.two { transform: translateX(0%); animation: color_anim 1s infinite 0.4s; }
+.skew-button path.two {
+  transition: 0.5s;
+  transform: translateX(-30%);
+}
+
+.skew-button:hover path.three {
+  animation: color_anim 1s infinite 0.2s;
+}
+
+.skew-button:hover path.one {
+  transform: translateX(0%);
+  animation: color_anim 1s infinite 0.6s;
+}
+
+.skew-button:hover path.two {
+  transform: translateX(0%);
+  animation: color_anim 1s infinite 0.4s;
+}
 
 .text-stroke-black {
   -webkit-text-stroke: 2px black;
@@ -125,7 +187,8 @@
   transform: rotateY(180deg);
 }
 
-.card-front, .card-back {
+.card-front,
+.card-back {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -140,20 +203,70 @@
   transform: rotateY(180deg);
 }
 
+.retro-modal::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  background: #064e3b;
+  border: 4px solid black;
+  z-index: -1;
+  transform: translate(20px, 20px);
+}
+
+@keyframes subtle-pop {
+  0% {
+    transform: scale(0.95) translateY(10px);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.4s ease-out forwards;
+}
+
 .animate-comic {
-  animation: comic-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards, comic-wobble 3s ease-in-out infinite 0.6s;
+  animation: subtle-pop 0.3s ease-out forwards;
 }
 
 @keyframes falling-leaves {
-  0% { transform: translate(-100px, -100px) rotate(0deg); opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { transform: translate(calc(100vw + 100px), calc(100vh + 100px)) rotate(720deg); opacity: 0; }
+  0% {
+    transform: translate(-100px, -100px) rotate(0deg);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  90% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translate(calc(100vw + 100px), calc(100vh + 100px)) rotate(720deg);
+    opacity: 0;
+  }
 }
 
 @keyframes leaf-sway {
-  0%, 100% { margin-left: 0px; }
-  50% { margin-left: 50px; }
+
+  0%,
+  100% {
+    margin-left: 0px;
+  }
+
+  50% {
+    margin-left: 50px;
+  }
 }
 
 .animate-leaf {
@@ -168,15 +281,35 @@
 }
 
 @keyframes sonic-run {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  25% { transform: translateY(-3px) rotate(5deg); }
-  50% { transform: translateY(0) rotate(0deg); }
-  75% { transform: translateY(-3px) rotate(-5deg); }
+
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  25% {
+    transform: translateY(-3px) rotate(5deg);
+  }
+
+  50% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  75% {
+    transform: translateY(-3px) rotate(-5deg);
+  }
 }
 
 @keyframes sonic-trail {
-  0% { opacity: 0.5; transform: scale(1); }
-  100% { opacity: 0; transform: scale(1.5); }
+  0% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.5);
+  }
 }
 
 .animate-sonic {
@@ -188,13 +321,23 @@
 }
 
 @keyframes move-bg-diagonal {
-  from { background-position: 0 0; }
-  to { background-position: 0 40px; }
+  from {
+    background-position: 0 0;
+  }
+
+  to {
+    background-position: 0 40px;
+  }
 }
 
 @keyframes move-bg-vertical {
-  from { background-position: 0 0; }
-  to { background-position: 0 40px; }
+  from {
+    background-position: 0 0;
+  }
+
+  to {
+    background-position: 0 40px;
+  }
 }
 
 .animate-bg-diagonal {
@@ -208,8 +351,13 @@
 }
 
 @keyframes move-bg-dots {
-  from { background-position: 0 0; }
-  to { background-position: 0 24px; }
+  from {
+    background-position: 0 0;
+  }
+
+  to {
+    background-position: 0 24px;
+  }
 }
 
 .animate-bg-dots {
@@ -218,38 +366,45 @@
 }
 
 @keyframes move-bg-zigzag {
-  from { background-position: 0 0; }
-  to { background-position: 0 100px; }
+  from {
+    background-position: 0 0;
+  }
+
+  to {
+    background-position: 0 100px;
+  }
 }
 
 .animate-bg-zigzag {
-  background: 
-    linear-gradient(135deg, rgba(0,0,0,0.03) 25%, transparent 25%),
-    linear-gradient(225deg, rgba(0,0,0,0.03) 25%, transparent 25%),
-    linear-gradient(45deg, rgba(0,0,0,0.03) 25%, transparent 25%),
-    linear-gradient(315deg, rgba(0,0,0,0.03) 25%, transparent 25%);
+  background:
+    linear-gradient(135deg, rgba(0, 0, 0, 0.03) 25%, transparent 25%),
+    linear-gradient(225deg, rgba(0, 0, 0, 0.03) 25%, transparent 25%),
+    linear-gradient(45deg, rgba(0, 0, 0, 0.03) 25%, transparent 25%),
+    linear-gradient(315deg, rgba(0, 0, 0, 0.03) 25%, transparent 25%);
   background-size: 100px 100px;
   animation: move-bg-zigzag 4s linear infinite;
 }
 
 /* Circular Gallery Styles */
 .gallery {
-  --g: 8px;   /* the gap */
-  --s: 400px; /* the size */
-  
+  --g: 8px;
+  /* the gap */
+  --s: 400px;
+  /* the size */
+
   display: grid;
   border-radius: 50%;
   width: var(--s);
   aspect-ratio: 1;
 }
 
-.gallery > img {
+.gallery>img {
   grid-area: 1/1;
   width: var(--s);
   aspect-ratio: 1;
   object-fit: cover;
   border-radius: 50%;
-  transform: translate(var(--_x,0),var(--_y,0));
+  transform: translate(var(--_x, 0), var(--_y, 0));
   cursor: pointer;
   z-index: 0;
   transition: .3s, z-index 0s .3s;
@@ -263,23 +418,26 @@
 }
 
 .gallery:hover img {
-  transform: translate(0,0);
+  transform: translate(0, 0);
 }
 
-.gallery > img:nth-child(1) {
-  clip-path: polygon(50% 50%,calc(50%*var(--_i,0)) calc(120%*var(--_i,0)),0 calc(100%*var(--_i,0)),0 0,100% 0,100% calc(100%*var(--_i,0)),calc(100% - 50%*var(--_i,0)) calc(120%*var(--_i,0)));
+.gallery>img:nth-child(1) {
+  clip-path: polygon(50% 50%, calc(50%*var(--_i, 0)) calc(120%*var(--_i, 0)), 0 calc(100%*var(--_i, 0)), 0 0, 100% 0, 100% calc(100%*var(--_i, 0)), calc(100% - 50%*var(--_i, 0)) calc(120%*var(--_i, 0)));
   --_y: calc(-1*var(--g))
 }
-.gallery > img:nth-child(2) {
-  clip-path: polygon(50% 50%,calc(100% - 120%*var(--_i,0)) calc(50%*var(--_i,0)),calc(100% - 100%*var(--_i,0)) 0,100% 0,100% 100%,calc(100% - 100%*var(--_i,0)) 100%,calc(100% - 120%*var(--_i,0)) calc(100% - 50%*var(--_i,0)));
+
+.gallery>img:nth-child(2) {
+  clip-path: polygon(50% 50%, calc(100% - 120%*var(--_i, 0)) calc(50%*var(--_i, 0)), calc(100% - 100%*var(--_i, 0)) 0, 100% 0, 100% 100%, calc(100% - 100%*var(--_i, 0)) 100%, calc(100% - 120%*var(--_i, 0)) calc(100% - 50%*var(--_i, 0)));
   --_x: var(--g)
 }
-.gallery > img:nth-child(3) {
-  clip-path: polygon(50% 50%,calc(100% - 50%*var(--_i,0)) calc(100% - 120%*var(--_i,0)),100% calc(100% - 120%*var(--_i,0)),100% 100%,0 100%,0 calc(100% - 100%*var(--_i,0)),calc(50%*var(--_i,0)) calc(100% - 120%*var(--_i,0)));
+
+.gallery>img:nth-child(3) {
+  clip-path: polygon(50% 50%, calc(100% - 50%*var(--_i, 0)) calc(100% - 120%*var(--_i, 0)), 100% calc(100% - 120%*var(--_i, 0)), 100% 100%, 0 100%, 0 calc(100% - 100%*var(--_i, 0)), calc(50%*var(--_i, 0)) calc(100% - 120%*var(--_i, 0)));
   --_y: var(--g)
 }
-.gallery > img:nth-child(4) {
-  clip-path: polygon(50% 50%,calc(120%*var(--_i,0)) calc(50%*var(--_i,0)),calc(100%*var(--_i,0)) 0,0 0,0 100%,calc(100%*var(--_i,0)) 100%,calc(120%*var(--_i,0)) calc(100% - 50%*var(--_i,0)));
+
+.gallery>img:nth-child(4) {
+  clip-path: polygon(50% 50%, calc(120%*var(--_i, 0)) calc(50%*var(--_i, 0)), calc(100%*var(--_i, 0)) 0, 0 0, 0 100%, calc(100%*var(--_i, 0)) 100%, calc(120%*var(--_i, 0)) calc(100% - 50%*var(--_i, 0)));
   --_x: calc(-1*var(--g))
 }
 
@@ -290,14 +448,29 @@
 }
 
 @keyframes marquee {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
 }
 
 @keyframes float-custom {
-  0%, 100% { transform: translate(0, 0) rotate(0deg); }
-  33% { transform: translate(10px, -20px) rotate(5deg); }
-  66% { transform: translate(-5px, 15px) rotate(-5deg); }
+
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+
+  33% {
+    transform: translate(10px, -20px) rotate(5deg);
+  }
+
+  66% {
+    transform: translate(-5px, 15px) rotate(-5deg);
+  }
 }
 
 .animate-marquee {
@@ -314,7 +487,7 @@
   --primary: #FF6B00;
   --info: #0EA5E9;
   --success: #10B981;
-  --bg-light: #F4E4BC;
+  --bg-light: #000000;
 }
 
 .text-gradient-red-blue-white {

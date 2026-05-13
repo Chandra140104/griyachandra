@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,8 +16,8 @@
         <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
     @endif
 </head>
-<body class="bg-[#FDFDFC] dark:bg-[#0a0a0a] text-[#1b1b18] dark:text-[#EDEDEC] flex items-center justify-center min-h-screen font-sans antialiased">
-    <div class="w-full max-w-md p-8 sm:p-10 bg-white dark:bg-[#161615] rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.1)] border border-[#e3e3e0] dark:border-[#3E3E3A] transition-all duration-300">
+<body style="background-color: #000000 !important; color: #EDEDEC !important;" class="flex items-center justify-center min-h-screen font-sans antialiased">
+    <div style="background-color: #161615 !important;" class="w-full max-w-md p-8 sm:p-10 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.1)] border border-[#3E3E3A] transition-all duration-300">
         
         <div class="text-center mb-8">
             <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#fff2f2] dark:bg-[#1D0002] mb-4">

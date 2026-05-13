@@ -76,7 +76,7 @@ const ScrollReveal = ({ children, direction = "up" }) => {
 };
 
 const DiagonalGrid = () => (
-  <div 
+  <div
     className="absolute inset-0 pointer-events-none z-0 opacity-40"
     style={{
       backgroundImage: `
@@ -95,32 +95,32 @@ const RoomCard = ({ icon, title, description, backTitle, facilities, bgColor, ba
 
   return (
     <ScrollReveal direction={title.includes("Non") ? "left" : "right"}>
-      <div className="card-perspective h-[450px]">
+      <div className="card-perspective h-[340px] md:h-[450px]">
         <div className={`card-inner ${isFlipped ? 'is-flipped' : ''}`}>
           {/* Front */}
-          <div className={`card-front p-10 border-4 border-black ${bgColor} shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]`}>
-            <div className="text-5xl mb-6">{icon}</div>
-            <h3 className="text-5xl font-black uppercase mb-4">{title}</h3>
-            <p className="font-bold text-lg mb-8">{description}</p>
+          <div className={`card-front p-5 md:p-10 border-4 border-black ${bgColor} shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]`}>
+            <div className="text-3xl md:text-5xl mb-2 md:mb-6">{icon}</div>
+            <h3 className="text-3xl md:text-5xl font-black uppercase mb-1 md:mb-4 leading-tight">{title}</h3>
+            <p className="font-bold text-sm md:text-lg mb-3 md:mb-8 leading-tight md:leading-normal">{description}</p>
             <div className="mt-auto">
-              <RetroButton className="w-full" onClick={() => setIsFlipped(true)}>
+              <RetroButton className="w-full text-xs md:text-base py-2 md:py-3" onClick={() => setIsFlipped(true)}>
                 Detail Kamar
               </RetroButton>
             </div>
           </div>
           {/* Back */}
-          <div className={`card-back p-10 border-4 border-black ${backBgColor} text-white shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]`}>
-            <h3 className="text-3xl font-black uppercase mb-6">{backTitle}</h3>
-            <ul className="space-y-4 font-bold text-lg mb-8">
+          <div className={`card-back p-5 md:p-10 border-4 border-black ${backBgColor} text-white shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]`}>
+            <h3 className="text-xl md:text-3xl font-black uppercase mb-2 md:mb-6">{backTitle}</h3>
+            <ul className="space-y-1 md:space-y-4 font-bold text-xs md:text-lg mb-3 md:mb-8">
               {facilities.map((fac, i) => (
-                <li key={i} className="flex items-center gap-3 text-white">✓ {fac}</li>
+                <li key={i} className="flex items-center gap-2 md:gap-3 text-white">✓ {fac}</li>
               ))}
             </ul>
-            <div className="mt-auto flex gap-4">
-              <RetroButton className="flex-1" onClick={() => setIsFlipped(false)}>
+            <div className="mt-auto flex gap-2 md:gap-4">
+              <RetroButton className="flex-1 text-xs md:text-base py-2 md:py-3" onClick={() => setIsFlipped(false)}>
                 Kembali
               </RetroButton>
-              <RetroButton className={`flex-1 ${buttonColor}`}>
+              <RetroButton className={`flex-1 text-xs md:text-base py-2 md:py-3 ${buttonColor}`}>
                 Pilih
               </RetroButton>
             </div>
@@ -131,57 +131,96 @@ const RoomCard = ({ icon, title, description, backTitle, facilities, bgColor, ba
   );
 };
 
+const Modal = ({ isOpen, onClose, children }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4">
+      {/* Backdrop */}
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/80 backdrop-blur-md animate-fade-in"
+        onClick={onClose}
+      ></div>
+
+      {/* Modal Container */}
+      <div className="bg-[#FFD100] border-4 border-black p-4 md:p-8 shadow-[20px_20px_0px_0px_#064e3b] max-w-5xl w-full relative animate-comic z-10">
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute -top-4 -right-4 md:-top-8 md:-right-8 bg-[#FF0000] border-4 border-black w-10 h-10 md:w-14 md:h-14 flex items-center justify-center text-white font-black text-xl md:text-3xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all cursor-pointer z-20"
+        >
+          ✕
+        </button>
+
+        <div className="bg-white border-4 border-black overflow-hidden">
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const Landing = () => {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [barColor, setBarColor] = useState('#FF6B00');
   const [showSplash, setShowSplash] = useState(true);
+  const [isHeroModalOpen, setIsHeroModalOpen] = useState(false);
   const splashRef = useRef(null);
   const splashTextRef = useRef(null);
 
   useEffect(() => {
+    if (isHeroModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+  }, [isHeroModalOpen]);
+
+  useEffect(() => {
     // Splash Screen Animation (Responsive)
     const ctx = gsap.context(() => {
-        const words = splashTextRef.current.querySelectorAll('.word');
-        const isMobile = window.innerWidth < 768;
-        
-        const tl = gsap.timeline({
-            onComplete: () => {
-                gsap.to(splashRef.current, {
-                    y: "100%",
-                    duration: 1,
-                    ease: "power4.inOut",
-                    onComplete: () => setShowSplash(false)
-                });
-            }
-        });
+      const words = splashTextRef.current.querySelectorAll('.word');
+      const isMobile = window.innerWidth < 768;
 
-        if (isMobile) {
-            // Mobile: One-by-one in the center
-            words.forEach((word, index) => {
-                tl.fromTo(word, 
-                    { opacity: 0, scale: 0.9, y: 10 },
-                    { opacity: 1, scale: 1, y: 0, duration: 0.6, ease: "power2.out" }
-                );
-                if (index < words.length - 1) {
-                    tl.to(word, { opacity: 0, scale: 1.1, duration: 0.4, delay: 0.4 });
-                } else {
-                    tl.to({}, { duration: 0.5 });
-                }
-            });
-        } else {
-            // Desktop: Sequential side-by-side reveal (no fade out)
-            tl.fromTo(words, 
-                { opacity: 0, y: 20 },
-                { 
-                    opacity: 1, 
-                    y: 0, 
-                    duration: 0.8, 
-                    stagger: 0.6, 
-                    ease: "power3.out" 
-                }
-            );
-            tl.to({}, { duration: 1 }); // Pause before exit
+      const tl = gsap.timeline({
+        onComplete: () => {
+          gsap.to(splashRef.current, {
+            y: "100%",
+            duration: 1,
+            ease: "power4.inOut",
+            onComplete: () => setShowSplash(false)
+          });
         }
+      });
+
+      if (isMobile) {
+        // Mobile: One-by-one in the center
+        words.forEach((word, index) => {
+          tl.fromTo(word,
+            { opacity: 0, scale: 0.9, y: 10 },
+            { opacity: 1, scale: 1, y: 0, duration: 0.6, ease: "power2.out" }
+          );
+          if (index < words.length - 1) {
+            tl.to(word, { opacity: 0, scale: 1.1, duration: 0.4, delay: 0.4 });
+          } else {
+            tl.to({}, { duration: 0.5 });
+          }
+        });
+      } else {
+        // Desktop: Sequential side-by-side reveal (no fade out)
+        tl.fromTo(words,
+          { opacity: 0, y: 20 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            stagger: 0.6,
+            ease: "power3.out"
+          }
+        );
+        tl.to({}, { duration: 1 }); // Pause before exit
+      }
     });
 
     const handleScroll = () => {
@@ -218,14 +257,14 @@ const Landing = () => {
 
   return (
     <div className="min-h-screen bg-[#fafafa] text-black selection:bg-black selection:text-white font-['Instrument_Sans'] relative">
-      
+
       {/* Splash Screen */}
       {showSplash && (
-        <div 
+        <div
           ref={splashRef}
           className="fixed inset-0 z-[1000] bg-black flex items-center justify-center p-6"
         >
-          <div 
+          <div
             ref={splashTextRef}
             className="text-white text-4xl md:text-6xl font-black text-center tracking-widest relative w-full flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8"
           >
@@ -240,37 +279,37 @@ const Landing = () => {
 
       {/* Zipper-style Vertical Scroll Indicator (Right Side) */}
       <div className="fixed right-6 top-36 bottom-10 w-6 z-[60] bg-black/10 border-x-4 border-black hidden md:block">
-          {/* Zipper Teeth (Closed part - Below) */}
-          <div className="absolute inset-0 opacity-40 bg-[repeating-linear-gradient(0deg,#000,#000_4px,transparent_4px,transparent_8px)] [background-size:100%_8px]"></div>
-          
-          {/* The Zipper Pull (Handle) */}
-          <div 
-            className="w-[140%] -left-[20%] h-16 border-4 border-black transition-all duration-300 ease-out absolute z-20 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center overflow-hidden"
-            style={{ 
-              top: `${scrollProgress}%`, 
-              backgroundColor: barColor,
-              borderRadius: '4px 4px 12px 12px',
-              transform: 'translateY(-50%)'
-            }}
-          >
-              {/* Pull Tab Hole */}
-              <div className="w-2 h-6 bg-black/20 rounded-full border-2 border-black/40"></div>
-              {/* Metallic Shine */}
-              <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-white/20 via-transparent to-black/20 pointer-events-none"></div>
-          </div>
+        {/* Zipper Teeth (Closed part - Below) */}
+        <div className="absolute inset-0 opacity-40 bg-[repeating-linear-gradient(0deg,#000,#000_4px,transparent_4px,transparent_8px)] [background-size:100%_8px]"></div>
 
-          {/* Opened Part (Above pull) */}
-          <div 
-            className="absolute top-0 left-0 w-full bg-gray-500/40 transition-all duration-300"
-            style={{ height: `${scrollProgress}%` }}
-          >
-              <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle,#000_1px,transparent_1px)] [background-size:8px_8px]"></div>
-          </div>
+        {/* The Zipper Pull (Handle) */}
+        <div
+          className="w-[140%] -left-[20%] h-16 border-4 border-black transition-all duration-300 ease-out absolute z-20 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center overflow-hidden"
+          style={{
+            top: `${scrollProgress}%`,
+            backgroundColor: barColor,
+            borderRadius: '4px 4px 12px 12px',
+            transform: 'translateY(-50%)'
+          }}
+        >
+          {/* Pull Tab Hole */}
+          <div className="w-2 h-6 bg-black/20 rounded-full border-2 border-black/40"></div>
+          {/* Metallic Shine */}
+          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-white/20 via-transparent to-black/20 pointer-events-none"></div>
+        </div>
+
+        {/* Opened Part (Above pull) */}
+        <div
+          className="absolute top-0 left-0 w-full bg-gray-500/40 transition-all duration-300"
+          style={{ height: `${scrollProgress}%` }}
+        >
+          <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle,#000_1px,transparent_1px)] [background-size:8px_8px]"></div>
+        </div>
       </div>
 
       {/* Scroll Progress Bar (Top) */}
       <div className="fixed top-0 left-0 w-full h-3 z-[90] border-b-2 border-black bg-white/20 backdrop-blur-sm">
-        <div 
+        <div
           className="h-full transition-all duration-300 ease-out"
           style={{ width: `${scrollProgress}%`, backgroundColor: barColor }}
         />
@@ -307,9 +346,9 @@ const Landing = () => {
 
       {/* STICKY STACKED SECTIONS CONTAINER */}
       <div className="relative">
-        
+
         {/* 1. HERO SECTION (Yellow) */}
-        <div id="hero" className="sticky top-0 h-screen flex items-center bg-[#FFD100] z-10 border-b-4 border-black overflow-hidden relative">
+        <div id="hero" className="relative md:sticky md:top-0 h-screen flex items-center bg-[#FFD100] z-10 border-b-4 border-black overflow-hidden">
           <DiagonalGrid />
           <main className="w-full max-w-[1440px] mx-auto px-6 lg:px-20 pt-20 pb-0 relative z-10">
             <section className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-40 items-center">
@@ -327,10 +366,13 @@ const Landing = () => {
 
               <ScrollReveal direction="right">
                 <div className="flex justify-center lg:justify-end items-center p-4">
-                  <div className="bg-[#10B981] rounded-lg shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] border-4 border-black w-full max-w-md transform duration-500 hover:translate-x-5 hover:translate-y-5 pointer-events-none">
-                    <img 
-                      className="rounded-lg shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] border-4 border-black transform duration-500 hover:-translate-x-10 hover:-translate-y-10 pointer-events-auto w-full object-cover" 
-                      src="https://images.unsplash.com/photo-1604489141828-ca67d245c447" 
+                  <div
+                    onClick={() => setIsHeroModalOpen(true)}
+                    className="bg-[#10B981] rounded-lg shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] border-4 border-black w-full max-w-md transform duration-500 hover:translate-x-5 hover:translate-y-5 cursor-pointer"
+                  >
+                    <img
+                      className="rounded-lg shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] border-4 border-black transform duration-500 hover:-translate-x-10 hover:-translate-y-10 w-full object-cover"
+                      src="https://images.unsplash.com/photo-1604489141828-ca67d245c447"
                       alt="Griya Chandra Hero"
                     />
                   </div>
@@ -341,7 +383,7 @@ const Landing = () => {
         </div>
 
         {/* 2. SECURITY SECTION (Green) */}
-        <div id="security" className="sticky top-0 h-screen flex items-center bg-[#10B981] z-20 border-t-4 border-black overflow-hidden relative">
+        <div id="security" className="relative md:sticky md:top-0 min-h-screen flex items-center bg-[#10B981] z-20 border-t-4 border-black py-12 md:py-0">
           <div className="absolute inset-0 opacity-10 bg-[repeating-linear-gradient(45deg,#000,#000_10px,transparent_10px,transparent_20px)] animate-bg-diagonal"></div>
           <div className="max-w-7xl mx-auto px-6 lg:px-20 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10 w-full">
             <ScrollReveal direction="right">
@@ -364,16 +406,16 @@ const Landing = () => {
         </div>
 
         {/* 3. ROOM SECTION (Blue) */}
-        <div id="rooms" className="sticky top-0 h-screen flex items-center bg-[#0EA5E9] z-30 border-t-4 border-black overflow-hidden relative">
+        <div id="rooms" className="relative md:sticky md:top-0 min-h-screen flex items-start md:items-center bg-[#0EA5E9] z-30 border-t-4 border-black py-16 md:py-0">
           <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#000_2px,transparent_2px)] [background-size:24px_24px] animate-bg-dots"></div>
           <div className="max-w-7xl mx-auto px-6 lg:px-20 relative z-10 w-full">
             <ScrollReveal>
-              <div className="text-center mb-20">
-                <h2 className="text-7xl font-black uppercase tracking-tighter text-white">Pilihan Kamar</h2>
+              <div className="text-center mb-10 md:mb-20">
+                <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter text-white">Pilihan Kamar</h2>
               </div>
             </ScrollReveal>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-              <RoomCard 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
+              <RoomCard
                 icon="❄️"
                 title="Tipe AC"
                 description="Kenyamanan maksimal dengan pendingin udara dan fasilitas lengkap."
@@ -383,7 +425,7 @@ const Landing = () => {
                 backBgColor="bg-black"
                 buttonColor="!bg-[#FF6B00] !text-white"
               />
-              <RoomCard 
+              <RoomCard
                 icon="🌿"
                 title="Tipe Non-AC"
                 description="Kesegaran alami dengan sirkulasi udara yang dirancang khusus."
@@ -398,7 +440,7 @@ const Landing = () => {
         </div>
 
         {/* 4. FINAL CTA SECTION (Orange) */}
-        <div id="cta" className="sticky top-0 h-screen flex items-center bg-[#FF6B00] z-40 border-t-4 border-black overflow-hidden relative">
+        <div id="cta" className="relative md:sticky md:top-0 min-h-screen flex items-center bg-[#FF6B00] z-40 border-t-4 border-black py-12 md:py-0">
           <div className="absolute inset-0 opacity-10 bg-[repeating-linear-gradient(0deg,transparent,transparent_20px,#000_20px,#000_23px)] animate-bg-vertical"></div>
           <div className="max-w-7xl mx-auto px-6 lg:px-20 relative z-10 text-center w-full">
             <ScrollReveal direction="up">
@@ -416,6 +458,15 @@ const Landing = () => {
           </div>
         </div>
       </div>
+      <Modal isOpen={isHeroModalOpen} onClose={() => setIsHeroModalOpen(false)}>
+        <div className="relative">
+          <img
+            src="https://images.unsplash.com/photo-1604489141828-ca67d245c447"
+            alt="Griya Chandra Detail"
+            className="w-full h-auto"
+          />
+        </div>
+      </Modal>
     </div>
   );
 };

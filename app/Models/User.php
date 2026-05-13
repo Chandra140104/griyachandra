@@ -99,4 +99,11 @@ class User extends Authenticatable implements MustVerifyEmail
         
         return ! is_null($this->email_verified_at);
     }
+
+    public function personalNotes() { return $this->hasMany(PersonalNote::class); }
+    public function personalTasks() { return $this->hasMany(PersonalTask::class); }
+    public function personalEvents() { return $this->hasMany(PersonalEvent::class); }
+    public function personalReminders() { return $this->hasMany(PersonalReminder::class); }
+    public function personalFinances() { return $this->hasMany(PersonalFinance::class); }
+    public function personalHealthLogs() { return $this->hasMany(PersonalHealthLog::class); }
 }

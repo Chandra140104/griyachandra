@@ -20,18 +20,14 @@
     
     <script>
         // Prevent FOUC
-        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
+        document.documentElement.classList.add('dark');
     </script>
     <!-- AlpineJS for Modals -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
-<body class="bg-[#FDFDFC] dark:bg-[#0a0a0a] text-[#1b1b18] dark:text-[#EDEDEC] font-sans antialiased transition-colors duration-300" x-data="{ 
+<body style="background-color: #000000 !important; color: #EDEDEC !important;" class="font-sans antialiased transition-colors duration-300" x-data="{ 
     darkMode: localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches),
     sidebarOpen: false,
     toggleTheme() {
@@ -130,6 +126,7 @@
                             Riwayat Transaksi
                         </a>
                     </li>
+
                     @endif
 
                     @if(auth()->check() && auth()->user()->role === 'user')
@@ -155,7 +152,35 @@
                             @endif
                         </a>
                     </li>
+
+
+                    <!-- 6. Catatan Pribadi (With Sub-menus) -->
+                    <li x-data="{ open: {{ request()->routeIs('personal.*') || request()->routeIs('personal.notes') ? 'true' : 'false' }} }">
+                        <button @click="open = !open" 
+                           class="flex items-center gap-3 w-full px-3 py-2 rounded-lg {{ request()->routeIs('personal.*') || request()->routeIs('personal.notes') ? 'bg-[#fff2f2] dark:bg-[#1D0002] text-[#F53003] dark:text-[#FF4433]' : 'text-[#706f6c] dark:text-[#A1A09A] hover:bg-[#FDFDFC] dark:hover:bg-[#3E3E3A] hover:text-[#1b1b18] dark:hover:text-[#EDEDEC]' }} font-medium transition-colors">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                            <span class="flex-1 text-left">Catatan Pribadi</span>
+                            <svg class="w-4 h-4 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        
+                        <ul x-show="open" 
+                            x-transition:enter="transition ease-out duration-100"
+                            x-transition:enter-start="transform opacity-0 scale-95"
+                            x-transition:enter-end="transform opacity-100 scale-100"
+                            class="mt-1 ml-9 space-y-1 border-l border-gray-100 dark:border-[#3E3E3A] pl-2">
+                            <li><a href="{{ route('personal.notes', ['tab' => 'summary']) }}" class="block px-3 py-1.5 text-xs rounded-md {{ request()->query('tab') === 'summary' ? 'text-[#F53003] font-bold' : 'text-gray-500 hover:text-gray-900 dark:hover:text-gray-200' }}">Ringkasan</a></li>
+                            <li><a href="{{ route('personal.notes', ['tab' => 'notes']) }}" class="block px-3 py-1.5 text-xs rounded-md {{ request()->query('tab') === 'notes' ? 'text-[#F53003] font-bold' : 'text-gray-500 hover:text-gray-900 dark:hover:text-gray-200' }}">Catatan Bebas</a></li>
+                            <li><a href="{{ route('personal.notes', ['tab' => 'schedule']) }}" class="block px-3 py-1.5 text-xs rounded-md {{ request()->query('tab') === 'schedule' ? 'text-[#F53003] font-bold' : 'text-gray-500 hover:text-gray-900 dark:hover:text-gray-200' }}">Jadwal & Agenda</a></li>
+                            <li><a href="{{ route('personal.notes', ['tab' => 'health']) }}" class="block px-3 py-1.5 text-xs rounded-md {{ request()->query('tab') === 'health' ? 'text-[#F53003] font-bold' : 'text-gray-500 hover:text-gray-900 dark:hover:text-gray-200' }}">Kesehatan (BMI)</a></li>
+                        </ul>
+                    </li>
                     @endif
+
+
 
                     <!-- 5. Profile -->
                     <li>

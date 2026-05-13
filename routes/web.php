@@ -278,5 +278,43 @@ Route::middleware('auth')->group(function () {
     // Room image management (per-image delete & thumbnail)
     Route::delete('/rooms/{room}/images/{image}', [\App\Http\Controllers\RoomImageController::class, 'destroy'])->name('room.images.destroy');
     Route::post('/rooms/{room}/images/{image}/thumbnail', [\App\Http\Controllers\RoomImageController::class, 'setThumbnail'])->name('room.images.thumbnail');
+
+
+    // Catatan Pribadi (Personal Dashboard)
+    Route::get('/catatan-pribadi', [\App\Http\Controllers\PersonalNoteController::class, 'index'])->name('personal.notes');
+    Route::post('/catatan-pribadi/note', [\App\Http\Controllers\PersonalNoteController::class, 'storeNote'])->name('personal.notes.store');
+    Route::patch('/catatan-pribadi/note/{note}', [\App\Http\Controllers\PersonalNoteController::class, 'updateNote'])->name('personal.notes.update');
+    Route::delete('/catatan-pribadi/note/{note}', [\App\Http\Controllers\PersonalNoteController::class, 'destroyNote'])->name('personal.notes.destroy');
+    Route::post('/catatan-pribadi/note/{note}/pin', [\App\Http\Controllers\PersonalNoteController::class, 'togglePinNote'])->name('personal.notes.pin');
+    Route::post('/catatan-pribadi/task', [\App\Http\Controllers\PersonalNoteController::class, 'storeTask'])->name('personal.tasks.store');
+    Route::patch('/catatan-pribadi/task/{task}/toggle', [\App\Http\Controllers\PersonalNoteController::class, 'toggleTask'])->name('personal.tasks.toggle');
+    Route::patch('/catatan-pribadi/task/{task}', [\App\Http\Controllers\PersonalNoteController::class, 'updateTask'])->name('personal.tasks.update');
+    Route::delete('/catatan-pribadi/task/{task}', [\App\Http\Controllers\PersonalNoteController::class, 'destroyTask'])->name('personal.tasks.destroy');
+
+    Route::post('/catatan-pribadi/health', [\App\Http\Controllers\PersonalNoteController::class, 'storeHealth'])->name('personal.health.store');
+    Route::post('/catatan-pribadi/event', [\App\Http\Controllers\PersonalNoteController::class, 'storeEvent'])->name('personal.events.store');
+    Route::post('/catatan-pribadi/reminder', [\App\Http\Controllers\PersonalNoteController::class, 'storeReminder'])->name('personal.reminders.store');
+
+    // Temporary route to fix the missing tables error
+    Route::get('/fix-database', function() {
+        try {
+            // Jalankan migrasi standar dulu
+            \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+            
+            // Tambahkan kolom title dan is_pinned secara manual jika belum ada
+            \Illuminate\Support\Facades\Schema::table('personal_notes', function ($table) {
+                if (!\Illuminate\Support\Facades\Schema::hasColumn('personal_notes', 'title')) {
+                    $table->string('title')->nullable()->after('user_id');
+                }
+                if (!\Illuminate\Support\Facades\Schema::hasColumn('personal_notes', 'is_pinned')) {
+                    $table->boolean('is_pinned')->default(false)->after('content');
+                }
+            });
+
+            return redirect()->route('personal.notes')->with('success', 'Database berhasil diperbarui secara paksa! Kolom title dan is_pinned sudah aktif.');
+        } catch (\Exception $e) {
+            return "Gagal memperbarui database: " . $e->getMessage();
+        }
+    })->name('personal.fix-db');
     });
 });
